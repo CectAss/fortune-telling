@@ -1,47 +1,52 @@
 BOT_TOKEN = "7230712601:AAE4eZphVXo0-Qa-PiSweCy3lPItYkP5-lo"
+
+
 GREETING_TEXT = 'Здравствуй, малыш. Через несколько секунд твоя жизнь изменится навсегда, она разделится на "до" и "после". Иногда жизнь приносит тяжелые испытания и кажется, что проблема безнадёжна, но Гудтаймс crew уверены, что всегда можно найти путь к решению. Этот бот поможет принять сложные решения, узнать немного о нас и увидеть наши чудеса. Пользуйся этим ботом каждый день, и он защитит тебя и твоих близких от негативного влияния темных сил зла, наведения порчи, сглаза или родового проклятья. Помните Гудтаймс и Гудтаймс crew всегда рядом и готовы помочь. Не стесняйся общаться к этому боту за советом и поддержкой, ведь он несёт в себе свет и поддержку, помогая людям найти верный пусть. Крюдания.....'
 
-GREETING_BUTTONS = ["Гадание", "Задать вопрос", "Подписаться на рассылку", "Инфо о крю", "Хочу помочь проекту"]
+
+GREETING_BUTTONS = ["Гадание", "Задать вопрос", "Управление рассылкой", "Инфо о крю"]                #todo
+
+
 QUESTION_TEXT = ["Какой у тебя вопрос?", "Что ты хочешь узнать у звёзд?"]
 
-MAILING_STERT_TEXT = "Прямая связь со звёздами налажена"
 
+MAILING_TEXT = "описание рассылки"                                                                                          #todo
+MAILING_BUTTONS = ["Подписаться", "Отписаться"]                                                                             #todo
+MAILING_STАRT_TEXT = "Прямая связь со звёздами налажена"
 MAILING_END_TEXT = "Прямая связь со звёздами утеряна, ты все разрушил!!"
+
 
 INFO_TEXT = "Информация о Гудтаймс crew и Гудтаймс. Что вы хотите узнать?"
 INFO_BUTTONS = ["Гудтаймс crew", "Гудтаймс"]
 
+
 INFO_CREW_TEXT = "Что вы хотите узнать о нас?"
 INFO_CREW_BUTTONS = ["Ссылки на нас", "Мы горим", "Помочь проекту"]
-INFO_CREW_CONTACT_TEXT = """Cсылка на нас в ВК:
-    https://vk.com/crewgoodtimes
-    Ссылка на наш Ютуб: 
-    https://youtube.com/@crewgoodtimes?si=-yt7AZx9O7Ehxw62
-    Ссылка на наш Инстаграм: 
-    instagram.com/goodtimes.crew """
+INFO_CREW_CONTACT_TEXT = """Cсылка на нас в ВК: https://vk.com/crewgoodtimes
+Ссылка на наш Ютуб: https://youtube.com/@crewgoodtimes?si=-yt7AZx9O7Ehxw62
+Ссылка на наш Инстаграм: instagram.com/goodtimes.crew"""
 INFO_CREW_HELP_TEXT = "Вы можете помочь проекту так: блин, а реально как..."
-INFO_CREW_ONFIRE_TEXT = "Ссылка на наши альбомы: хихи я ниче не добавил улюлю"
+INFO_CREW_ONFIRE_TEXT = "Ссылка на наши альбомы: https://vk.com/albums-112867684"
+
 
 INFO_BAND_TEXT = "Что вы хотите узнать о группе?"
 INFO_BAND_BUTTONS = ["Ссылки на группу", "Концерты"]
-INFO_BAND_LINK_TEXT = """Ссылка на ВК: 
-    https://vk.com/goodtimesband 
-    Ссылка на ТГ: 
-    https://t.me/goodtimesofficial
-    Ссылка на официальный сайт: 
-    http://gtband.ru
-    Ссылка на Ютуб: 
-    https://www.youtube.com/channel/UC1GsV8mt3Ab5gsKLb3sa3xw
-    Ссылка на Инстаграм: 
-    https://www.instagram.com/good_times_band/"""
+INFO_BAND_LINK_TEXT = """Ссылка на ВК: https://vk.com/goodtimesband 
+Ссылка на ТГ: https://t.me/goodtimesofficial
+Ссылка на официальный сайт: http://gtband.ru
+Ссылка на Ютуб: https://www.youtube.com/channel/UC1GsV8mt3Ab5gsKLb3sa3xw
+Ссылка на Инстаграм: https://www.instagram.com/good_times_band/"""
 INFO_BAND_EVENTS_TEXT = """Здесь вы можете узнать о концертах:
-    Ссылка на официальный сайт: 
-    http://gtband.ru
-    Ссылка на афишу в ВК: 
-    https://vk.com/app6819359_-8415304"""
 
-MONEY_TEXT = "реквизиты"
+Ссылка на официальный сайт: https://gtband.ru/#gigs
+Ссылка на афишу в ВК: https://vk.com/app6819359_-8415304"""
 
-DISTRIBUTION_BUTTONS = ["Назад в меню"]
 
-FORTUNE_TELLING_LIMIT_TEXT = "Вы уже получили предсказание 3 раза, приходите завтра!"
+DISTRIBUTION_BUTTONS = ["Назад в меню"]                                                                                     #todo
+
+
+FORTUNE_TELLING_BUTTONS = ["Получить еще одно предсказание"]
+FORTUNE_TELLING_LIMIT_TEXT = "Вы уже получили предсказание 3 раза, приходите завтра!"                                       #todo
+
+
+PRESS_BUTTON_TEXT = "Пожалуйста, выберите вариант из предложеных ниже."
