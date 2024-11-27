@@ -70,17 +70,19 @@ def distribution(message):                                                      
                          reply_markup=keyboard(INFO_BUTTONS+DISTRIBUTION_BUTTONS))                          # Отправка сообщения с вопросом о чем хочет получить информацию пользователь
         bot.register_next_step_handler(message, info)                                                       # Редирект в функцию отвечающую за информацию (см. функцию info)
 
-    elif(message.text==buttons(message)[4]):                                                            # Если пользователь хочет отослать рассылку
-        mailing_day-=1                                                                                      # Откат памяти бота на один день (рассылочный) назад
-        bot.send_message(message.chat.id, MAIN_TEXT, 
-                         reply_markup=keyboard(buttons(message)))                                           # Отправка сообщения заново
-        bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию  
+    if(str(message.chat.id) in allowed_users):
+    
+        if(message.text==buttons(message)[4]):                                                            # Если пользователь хочет отослать рассылку
+            mailing_day-=1                                                                                      # Откат памяти бота на один день (рассылочный) назад
+            bot.send_message(message.chat.id, MAIN_TEXT, 
+                            reply_markup=keyboard(buttons(message)))                                           # Отправка сообщения заново
+            bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию  
 
-    elif(message.text==buttons(message)[5]):                                                            # Если пользователь хочет сбросить лимит гаданий у всех
-        fortune_telling_day-=1                                                                              # Откат памяти бота на один день (лимитовый) назад
-        bot.send_message(message.chat.id, MAIN_TEXT, 
-                         reply_markup=keyboard(buttons(message)))                                           # Отправка сообщения заново
-        bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию        
+        elif(message.text==buttons(message)[5]):                                                            # Если пользователь хочет сбросить лимит гаданий у всех
+            fortune_telling_day-=1                                                                              # Откат памяти бота на один день (лимитовый) назад
+            bot.send_message(message.chat.id, MAIN_TEXT, 
+                            reply_markup=keyboard(buttons(message)))                                           # Отправка сообщения заново
+            bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию        
 
     else:                                                                                               # Если пользователь не нажал на кнопку и ввел что то свое   
         bot.send_message(message.chat.id, MAIN_TEXT,        
