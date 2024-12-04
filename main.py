@@ -30,12 +30,13 @@ allowed_users = ["1015008397", "1070179116"]
 
 @bot.message_handler(commands=["start"])                                                            # Объявляю что нижеупомянутая функция будет вызвана при команде /start
 def greeting(message):                                                                              # Создание функции greeting
-    bot.send_message(message.chat.id, GREETING_TEXT, reply_markup=keyboard(buttons(message)))               # Отправка приветствия вместе с кнопками
+    bot.send_message(message.chat.id, GREETING_TEXT, reply_markup=keyboard(buttons(message)))           # Отправка приветствия вместе с кнопками
     bot.register_next_step_handler(message, distribution)                                               # Редирект пользователя в функцию отвечающую за основные кнопки (см. функцию distribution)
 
 #-------------------------------------------------------------------------------------------------- Основные кнопки ----------------------------------------------------------------------------------------------------------------------------------------------   
 
 def distribution(message):                                                                          # Создание функции distribution
+    global fortune_telling
     global fortune_telling_day                                                                          # Получение доступа к переменной извне для дальнейшего изменения
     global mailing_day                                                                                  # Получение доступа к переменной извне для дальнейшего изменения
     if(message.text==buttons(message)[0] or message.text==FORTUNE_TELLING_BUTTONS[0]):                      # Если пользователь ввел любой запрос про гадание (buttons(message)[0], FORTUNE_TELLING_BUTTONS[0])
@@ -50,7 +51,7 @@ def distribution(message):                                                      
             bot.send_message(message.chat.id, FORTUNE_TELLING_LIMIT_TEXT, 
                              reply_markup=keyboard(DISTRIBUTION_BUTTONS))                                       # Отправка сообщения о том что пользователь сегодня больше не может получить предсказание
         bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию
-            
+
     elif(message.text==buttons(message)[1]):                                                            # Если пользователь ввел запрос про вопрос (buttons(message)[1])
         bot.send_message(message.chat.id, choice(QUESTION_TEXT), 
                          reply_markup=keyboard(DISTRIBUTION_BUTTONS))                                          # Отправка сообщения спрашивающее ответ на что хочет узнать пользователь
@@ -70,26 +71,72 @@ def distribution(message):                                                      
                          reply_markup=keyboard(INFO_BUTTONS+DISTRIBUTION_BUTTONS))                          # Отправка сообщения с вопросом о чем хочет получить информацию пользователь
         bot.register_next_step_handler(message, info)                                                       # Редирект в функцию отвечающую за информацию (см. функцию info)
 
-    if(str(message.chat.id) in allowed_users):
-    
-        if(message.text==buttons(message)[4]):                                                            # Если пользователь хочет отослать рассылку
-            mailing_day-=1                                                                                      # Откат памяти бота на один день (рассылочный) назад
-            bot.send_message(message.chat.id, MAIN_TEXT, 
-                            reply_markup=keyboard(buttons(message)))                                           # Отправка сообщения заново
-            bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию  
+                                     
 
-        elif(message.text==buttons(message)[5]):                                                            # Если пользователь хочет сбросить лимит гаданий у всех
-            fortune_telling_day-=1                                                                              # Откат памяти бота на один день (лимитовый) назад
-            bot.send_message(message.chat.id, MAIN_TEXT, 
+    else:           
+        if(str(message.chat.id) in allowed_users):
+
+            if(message.text==buttons(message)[4]):                                                            # Если пользователь хочет отослать рассылку
+                mailing_day-=1                                                                                      # Откат памяти бота на один день (рассылочный) назад
+                bot.send_message(message.chat.id, MAIN_TEXT, 
+                                reply_markup=keyboard(buttons(message)))                                           # Отправка сообщения заново
+                bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию  
+
+            elif(message.text==buttons(message)[5]):                                                            # Если пользователь хочет сбросить лимит гаданий у всех
+                fortune_telling_day-=1                                                                              # Откат памяти бота на один день (лимитовый) назад
+                bot.send_message(message.chat.id, MAIN_TEXT, 
+                                reply_markup=keyboard(buttons(message)))                                            # Отправка сообщения заново
+                bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию 
+
+            elif(message.text==buttons(message)[6]):
+                bot.send_message(message.chat.id, SET_FILE_TEXT, 
+                                reply_markup=keyboard(DISTRIBUTION_BUTTONS))
+                bot.register_next_step_handler(message, get_file)
+
+            elif(message.text==buttons(message)[7]):
+                bot.send_document(message.chat.id, open("fortune-telling.txt", 'rb'), 
+                                  reply_markup=keyboard(buttons(message)))
+                bot.register_next_step_handler(message, distribution)
+        
+            else:                                                                                     # Если пользователь не нажал на кнопку и ввел что то свое   
+                bot.send_message(message.chat.id, MAIN_TEXT,        
+                                reply_markup=keyboard(buttons(message)))                                           # Отправка сообщения заново
+                bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию
+        else:
+            bot.send_message(message.chat.id, MAIN_TEXT,        
                             reply_markup=keyboard(buttons(message)))                                           # Отправка сообщения заново
-            bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию        
+            bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию
+
+#-------------------------------------------------------------------------------------------------- Прием файла ----------------------------------------------------------------------------------------------------------------------------------------------   
+
+def get_file(message):
+
+    global fortune_telling
+
+    if(message.text==DISTRIBUTION_BUTTONS[0]):                                                          # Если пользователь нажал кнопку возврата в меню
+        bot.send_message(message.chat.id, MAIN_TEXT, 
+                         reply_markup=keyboard(buttons(message)))                                               # Отправка приветствия с кнопками
+        bot.register_next_step_handler(message, distribution)                                               # Редирект в основную функцию (см. функцию distribution)
+
+    elif(message.document):
+        file_info = bot.get_file(message.document.file_id)
+        downloaded_file = bot.download_file(file_info.file_path)
+        src = "fortune-telling.txt"
+        with open(src, 'wb') as new_file:
+            new_file.write(downloaded_file)
+        fortune_telling = rewrite("fortune-telling.txt")
+        bot.send_message(message.chat.id, MAIN_TEXT, 
+                         reply_markup=keyboard(buttons(message)))                                 
+        bot.register_next_step_handler(message, distribution) 
 
     else:                                                                                               # Если пользователь не нажал на кнопку и ввел что то свое   
-        bot.send_message(message.chat.id, MAIN_TEXT,        
-                         reply_markup=keyboard(buttons(message)))                                               # Отправка сообщения заново
-        bot.register_next_step_handler(message, distribution)                                               # Редирект в эту же функцию
+        bot.send_message(message.chat.id, PRESS_BUTTON_TEXT, 
+                         reply_markup=keyboard(DISTRIBUTION_BUTTONS))                          # Отправка сообщения с просьбой нажать на кнопку
+        bot.register_next_step_handler(message, get_file)                                                       # Редирект в эту же функцию
+
 
 #-------------------------------------------------------------------------------------------------- Обработка информации ----------------------------------------------------------------------------------------------------------------------------------------------   
+
 
 def info(message):                                                                                  # Создание функции info                                                                            
     if(message.text==DISTRIBUTION_BUTTONS[0]):                                                          # Если пользователь нажал кнопку возврата в меню
@@ -199,7 +246,7 @@ def question(message):                                                          
         bot.send_message(message.chat.id, MAIN_TEXT, 
                          reply_markup=keyboard(buttons(message)))                                               # Отправка приветствия с кнопками
     else:                                                                                               # Если пользователь ввел вопрос
-        bot.send_message(message.chat.id, "Ответ на вопрос)", 
+        bot.send_message(message.chat.id, choice(answers), 
                          reply_markup=keyboard(DISTRIBUTION_BUTTONS))                                       # Отправка ответа на вопрос
 
     bot.register_next_step_handler(message, distribution)                                               # Редирект в основную функцию (см. функцию distribution)
@@ -225,7 +272,27 @@ def check_mail():                                                               
 #-------------------------------------------------------------------------------------------------- Генирация текста рассылки ---------------------------------------------------------------------------------------------------------------------------------------------- 
 
 def gen_mailing_text():                                                                             # Создание функции gen_mailing_text
-    return "рассылка"
+    return HOROSCOPE_TEXT.format(ovn=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 tel=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 blz=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 rak=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 lev=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 dev=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 ves=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 srp=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 stc=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 koz=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 vod=choice(fortune_telling)+" "+choice(fortune_telling),
+                                 rib=choice(fortune_telling)+" "+choice(fortune_telling))
+
+#-------------------------------------------------------------------------------------------------- Перезапись массива ---------------------------------------------------------------------------------------------------------------------------------------------- 
+
+def rewrite(file_name):
+    arr = []
+    with open(file_name) as file:
+        for line in file:
+            arr.append(line[:-1])
+    return arr
 
 #-------------------------------------------------------------------------------------------------- Генирация массива кнопок ---------------------------------------------------------------------------------------------------------------------------------------------- 
 
