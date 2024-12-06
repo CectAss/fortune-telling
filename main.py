@@ -28,6 +28,7 @@ user_limit = []
 fortune_telling_day = datetime.now().day
 mailing_day = datetime.now().day
 mailing_users = []
+mailed_users = []
 
 #---------------------------------------------------------------------------------------------- Функции ----------------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------- Старт ----------------------------------------------------------------------------------------------------------------------------------------------
@@ -41,6 +42,8 @@ def greeting(message):
 
 @bot.message_handler()
 def on_message(message):
+
+    print(message.text, message.chat.id, datetime.now())
 
     if(message.text in [MAIN_BUTTONS.get("fortune_telling"), FORTUNE_TELLING_BUTTONS[0]]):    # Гадание
 
@@ -86,11 +89,15 @@ def admin_buttons(message):
 
     global user_limit
 
-    if(message.text==ADMIN_BUTTONS.get("mailing_test")):
+    if(message.text==DISTRIBUTION_BUTTON):                                                          
+        bot.send_message(message.chat.id, MAIN_TEXT, 
+            reply_markup=keyboard(buttons(message)))   
+
+    elif(message.text==ADMIN_BUTTONS.get("mailing_test")):
                 
         for id in mailing_users:
 
-            bot.send_message(id, gen_mailing_text())
+            bot.send_message(id, mail)
 
         bot.send_message(message.chat.id, SUCCESS_TEXT, 
             reply_markup=keyboard(buttons(message)))
@@ -114,8 +121,8 @@ def admin_buttons(message):
 
         bot.send_document(message.chat.id, open(FORTUNE_TELLING_FILE_NAME, 'rb'), 
             reply_markup=keyboard(buttons(message)))
-        
-
+    
+            
     elif(message.text==ADMIN_BUTTONS.get("set_answers")):
 
         bot.send_message(message.chat.id, SET_FILE_TEXT, 
@@ -300,33 +307,6 @@ def info_band(message):
 
 
 
-def set_fortune_telling(message):
-
-    global fortune_telling
-
-    if(message.text==DISTRIBUTION_BUTTON):
-
-        bot.send_message(message.chat.id, MAIN_TEXT, 
-            reply_markup=keyboard(buttons(message)))
-
-
-    elif(message.document):
-        file_info = bot.get_file(message.document.file_id) 
-        downloaded_file = bot.download_file(file_info.file_path)
-        with open(FORTUNE_TELLING_FILE_NAME, 'wb') as file:
-            file.write(downloaded_file)
-        fortune_telling = rewrite(FORTUNE_TELLING_FILE_NAME)
-        bot.send_message(message.chat.id, SUCCESS_TEXT, 
-            reply_markup=keyboard(buttons(message)))                                 
-
-
-    else:
-
-        bot.send_message(message.chat.id, PRESS_BUTTON_TEXT)
-        bot.register_next_step_handler(message, set_fortune_telling)
-
-
-
 def set_answers(message):
 
     global answers
@@ -354,23 +334,58 @@ def set_answers(message):
 
 
 
+def set_fortune_telling(message):
+
+    global fortune_telling
+
+    if(message.text==DISTRIBUTION_BUTTON):
+
+        bot.send_message(message.chat.id, MAIN_TEXT, 
+            reply_markup=keyboard(buttons(message)))
+
+
+    elif(message.document):
+        file_info = bot.get_file(message.document.file_id) 
+        downloaded_file = bot.download_file(file_info.file_path)
+        with open(FORTUNE_TELLING_FILE_NAME, 'wb') as file:
+            file.write(downloaded_file)
+        fortune_telling = rewrite(FORTUNE_TELLING_FILE_NAME)
+        bot.send_message(message.chat.id, SUCCESS_TEXT, 
+            reply_markup=keyboard(buttons(message)))                                 
+
+
+    else:
+
+        bot.send_message(message.chat.id, PRESS_BUTTON_TEXT)
+        bot.register_next_step_handler(message, set_fortune_telling)
+
+
+
 def check_mailing():
 
     global mailing_day
+    global mailed_users
+    global mail
+
 
     while True:
 
         if(datetime.now().day!=mailing_day):
 
-            for id in mailing_users:
-
-                bot.send_message(id, gen_mailing_text())
-
-
             mailing_day=datetime.now().day
+            mailed_users.clear()
+            mail=gen_mailing_text()
 
 
+        for id in mailing_users:
 
+            if not(id in mailed_users):
+
+                bot.send_message(id, mail)
+                mailed_users.append(id)
+
+
+            
 def gen_mailing_text():
 
     return HOROSCOPE_TEXT.format(a=gen_a_lot_from_arr(fortune_telling, 6),
@@ -385,6 +400,17 @@ def gen_mailing_text():
                                  j=gen_a_lot_from_arr(fortune_telling, 6),
                                  k=gen_a_lot_from_arr(fortune_telling, 6),
                                  l=gen_a_lot_from_arr(fortune_telling, 6))
+
+
+
+def gen_a_lot_from_arr(arr, n):
+
+    return ''.join([choice(arr)+" " for i in range(n)])
+
+
+
+
+mail = gen_mailing_text()
 
 
 
@@ -408,7 +434,7 @@ def buttons(message):
         return dict_to_arr(MAIN_BUTTONS)+[ADMIN_BUTTON]
     
 
-    return MAIN_BUTTONS
+    return dict_to_arr(MAIN_BUTTONS)
 
 
 
@@ -425,9 +451,6 @@ def rewrite(file_name):
 
     return arr
 
-def gen_a_lot_from_arr(arr, n):
-
-    return ''.join([choice(arr)+" " for i in range(n)])
 
 
 
